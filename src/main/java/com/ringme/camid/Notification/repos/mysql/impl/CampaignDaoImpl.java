@@ -60,7 +60,7 @@ public class CampaignDaoImpl implements CampaignDao {
     }
 
     @Override
-    public void updateCampaign() {
+    public void updateCampaignDoneEndedAt() {
         String sql = "UPDATE camid_campaign SET process_status=2 WHERE ended_at <= NOW() ";
         try {
             jdbcTemplate.update(sql);

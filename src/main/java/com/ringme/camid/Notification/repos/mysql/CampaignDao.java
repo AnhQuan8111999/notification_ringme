@@ -7,9 +7,11 @@ import java.util.List;
 public interface CampaignDao {
     List<Campaign> getCampaign();
 
-    void updateCampaign();
+    void updateCampaignDoneEndedAt();
 
     List<Campaign> getCampaignUnCron_expression();
 
     List<Campaign> getCampaignCron_expression();
+
+
 }

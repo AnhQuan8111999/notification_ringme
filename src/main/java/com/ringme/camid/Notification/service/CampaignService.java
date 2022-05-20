@@ -31,7 +31,7 @@ public class CampaignService {
 
 //    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
     public void updateCampaign(){
-        campaignDao.updateCampaign();
+        campaignDao.updateCampaignDoneEndedAt();
     }
 
     public List<Campaign> getCampaignUnCron_expression(){
