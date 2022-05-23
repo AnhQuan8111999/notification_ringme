@@ -2,9 +2,13 @@ package com.ringme.camid.Notification;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
+//@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class , DataSourceTransactionManagerAutoConfiguration.class})
 @EnableScheduling
 public class NotificationApplication {
 

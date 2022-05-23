@@ -19,10 +19,13 @@ public class CampaignService {
     private static Logger logger = LoggerFactory.getLogger(CampaignService.class);
 
 //    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
+
+    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
     public List<Campaign> getCampaigns(){
         List<Campaign> campaigns=new ArrayList<>();
         try {
             campaigns = campaignDao.getCampaign();
+            System.out.println(campaigns);
         }catch(Exception e){
             logger.info("GetCampaingn| Exception : " + e);
         }

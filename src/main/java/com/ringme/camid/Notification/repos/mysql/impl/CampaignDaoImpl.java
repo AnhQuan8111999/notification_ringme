@@ -6,6 +6,7 @@ import com.ringme.camid.Notification.service.CampaignService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,7 @@ import java.util.List;
 @Repository
 public class CampaignDaoImpl implements CampaignDao {
     @Autowired
+    @Qualifier("kakoakJdbcTemplate")
     JdbcTemplate jdbcTemplate;
 
     private static Logger logger = LoggerFactory.getLogger(CampaignDaoImpl.class);
@@ -61,7 +63,7 @@ public class CampaignDaoImpl implements CampaignDao {
 
     @Override
     public void updateCampaignDoneEndedAt() {
-        String sql = "UPDATE camid_campaign SET process_status=2 WHERE ended_at <= NOW() ";
+        String sql = "UPDATE camid_campaign SET process_status=2 WHERE ended_at < NOW() ";
         try {
             jdbcTemplate.update(sql);
         } catch (Exception e) {

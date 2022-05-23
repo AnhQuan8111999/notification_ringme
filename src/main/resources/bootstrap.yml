@@ -17,8 +17,9 @@
 database:
   app:
     datasource:
+#      url: jdbc:mysql://192.168.1.88:3306/kakoakcms?useUnicode=yes&characterEncoding=UTF-8
       url: jdbc:mysql://10.20.0.88:3306/kakoakcms?useUnicode=yes&characterEncoding=UTF-8
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       username: dbcms
       password: 120M1Tko4kaK53rv1cE
       hikari:
@@ -36,7 +37,7 @@ database:
   kakoak:
     datasource:
       url: jdbc:mysql://10.20.0.88:3306/kakoak?useUnicode=yes&characterEncoding=UTF-8
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       username: dbcms
       password: 120M1Tko4kaK53rv1cE
       hikari:
