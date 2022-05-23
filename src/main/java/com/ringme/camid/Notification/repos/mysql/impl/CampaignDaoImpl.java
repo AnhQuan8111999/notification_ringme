@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -19,8 +21,8 @@ import java.util.List;
 @Repository
 public class CampaignDaoImpl implements CampaignDao {
     @Autowired
-    @Qualifier("kakoakJdbcTemplate")
-    JdbcTemplate jdbcTemplate;
+    @Qualifier("kakoakCmsJdbcTemplate")
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     private static Logger logger = LoggerFactory.getLogger(CampaignDaoImpl.class);
 
@@ -65,7 +67,7 @@ public class CampaignDaoImpl implements CampaignDao {
     public void updateCampaignDoneEndedAt() {
         String sql = "UPDATE camid_campaign SET process_status=2 WHERE ended_at < NOW() ";
         try {
-            jdbcTemplate.update(sql);
+            jdbcTemplate.update(sql, new MapSqlParameterSource());
         } catch (Exception e) {
             logger.info("updateCampaign|EXCEPTION : " + e.getMessage(), e);
         }

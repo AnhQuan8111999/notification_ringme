@@ -8,12 +8,12 @@ import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 //@SpringBootApplication
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class , DataSourceTransactionManagerAutoConfiguration.class})
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
 @EnableScheduling
 public class NotificationApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(NotificationApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(NotificationApplication.class, args);
+    }
 
 }

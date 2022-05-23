@@ -1,5 +1,6 @@
 package com.ringme.camid.Notification.service;
 
+import com.google.gson.Gson;
 import com.ringme.camid.Notification.repos.mysql.CampaignDao;
 import com.ringme.camid.Notification.repos.mysql.entity.Campaign;
 import org.slf4j.Logger;
@@ -20,38 +21,38 @@ public class CampaignService {
 
 //    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
 
-    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
-    public List<Campaign> getCampaigns(){
-        List<Campaign> campaigns=new ArrayList<>();
+    @Scheduled(fixedDelay = 10000, initialDelay = 1000)
+    public List<Campaign> getCampaigns() {
+        List<Campaign> campaigns = new ArrayList<>();
         try {
             campaigns = campaignDao.getCampaign();
-            System.out.println(campaigns);
-        }catch(Exception e){
+            logger.info("DATA: " + new Gson().toJson(campaigns));
+        } catch (Exception e) {
             logger.info("GetCampaingn| Exception : " + e);
         }
         return campaigns;
     }
 
-//    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
-    public void updateCampaign(){
+    //    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
+    public void updateCampaign() {
         campaignDao.updateCampaignDoneEndedAt();
     }
 
-    public List<Campaign> getCampaignUnCron_expression(){
-        List<Campaign> campaigns=new ArrayList<>();
+    public List<Campaign> getCampaignUnCron_expression() {
+        List<Campaign> campaigns = new ArrayList<>();
         try {
             campaigns = campaignDao.getCampaignUnCron_expression();
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.info("getCampaignUnCron_expression| Exception : " + e);
         }
         return campaigns;
     }
 
-    public List<Campaign> getCampaignCron_expression(){
-        List<Campaign> campaigns=new ArrayList<>();
+    public List<Campaign> getCampaignCron_expression() {
+        List<Campaign> campaigns = new ArrayList<>();
         try {
             campaigns = campaignDao.getCampaignCron_expression();
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.info("getCampaignCron_expression| Exception : " + e);
         }
         return campaigns;

@@ -1,63 +1,45 @@
 package com.ringme.camid.Notification.config;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
-    //kakoakcms
-    @Primary
-    @Bean(name = "appDataSourceProperties")
-    @ConfigurationProperties("database.app.datasource")
-    public DataSourceProperties videoDataSourceProperties() {
-        return new DataSourceProperties();
-    }
-
-    //kakoakcms
-    @Primary
-    @Bean(name = "appDataSource")
-    @ConfigurationProperties("database.app.datasource.hikari")
-    public DataSource videoDataSource() {
-        return videoDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
-    }
-
-    @Primary
-    @Bean(name = "appNamedParameterJdbcTemplate")
-    public NamedParameterJdbcTemplate videoNamedParameterJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(videoDataSource());
-    }
-
-    @Bean(name = "appJdbcTemplate")
-    public JdbcTemplate videoJdbcTemplate() {
-        return new JdbcTemplate(videoDataSource());
-    }
-
-    //kakoak
-    @Primary
-    @Bean(name = "kakoakDataSourceProperties")
-    @ConfigurationProperties("database.kakoak.datasource")
-    public DataSourceProperties kakoakDataSourceProperties() {
-        return new DataSourceProperties();
-    }
-
-    // kakoak
-    @Primary
-    @Bean(name = "kakoakDataSource")
-    @ConfigurationProperties("database.kakoak.datasource.hikari")
-    public DataSource kakoakDataSource() {
-        return kakoakDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
+    @Bean
+    public DataSource kakoakdataSource(){
+//        System.out.println(driverClass+" "+ url+" "++" "+password);
+        DriverManagerDataSource source = new DriverManagerDataSource();
+        source.setDriverClassName("com.mysql.jdbc.Driver");
+        source.setUrl("jdbc:mysql://192.168.1.88:3306/kakoak");
+        source.setUsername("dbcms");
+        source.setPassword("120M1Tko4kaK53rv1cE");
+        return source;
     }
 
     @Bean(name = "kakoakJdbcTemplate")
-    public JdbcTemplate kakoakJdbcTemplate() {
-        return new JdbcTemplate(kakoakDataSource());
+    public NamedParameterJdbcTemplate kakoakJdbcTemplate(){
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(this.kakoakdataSource());
+        return namedParameterJdbcTemplate;
+    }
+
+    @Bean
+    public DataSource kakoakCmsdataSource(){
+//        System.out.println(driverClass+" "+ url+" "++" "+password);
+        DriverManagerDataSource source = new DriverManagerDataSource();
+        source.setDriverClassName("com.mysql.jdbc.Driver");
+        source.setUrl("jdbc:mysql://192.168.1.88:3306/kakoakcms");
+        source.setUsername("dbcms");
+        source.setPassword("120M1Tko4kaK53rv1cE");
+        return source;
+    }
+
+    @Bean(name = "kakoakCmsJdbcTemplate")
+    public NamedParameterJdbcTemplate kakoakCmsJdbcTemplate(){
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(this.kakoakCmsdataSource());
+        return namedParameterJdbcTemplate;
     }
 }
