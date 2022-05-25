@@ -5,7 +5,9 @@ import com.ringme.camid.Notification.repos.mongodb.entity.CamId_MessageInfo;
 import com.ringme.camid.Notification.repos.mongodb.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -31,16 +33,37 @@ public class MongoDao {
     }
 
     public User getRegID(String msisdn) {
-        return new User();
+        User user = new User();
+        try {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("username").is(msisdn));
+            query.addCriteria(Criteria.where("regid").exists(true));
+            user = (User) mongoTemplate.findOne(query, User.class, "users");
+        } catch (Exception e) {
+            logger.error("getRegID|Exception|" + e.getMessage(), e);
+        }
+        return user;
     }
 
     public List<CamId_MessageInfo> getCampaign(String msisdn, int limit, int skip) {
+        Query query = new Query(Criteria.where("msisdn").is(msisdn));// xoa status //bo id
         List<CamId_MessageInfo> list = new ArrayList<>();
-
+        try {
+            list = mongoTemplate.find(query.limit(limit).skip(skip * limit)
+                    .with(Sort.by(Sort.Direction.DESC, "notified_date")), CamId_MessageInfo.class, "message_info");
+        } catch (Exception e) {
+            logger.error("getCampaign|Exception|" + e.getMessage(), e);
+        }
         return list;
     }
 
     public void deleteMessageInfo(String msId) {
+        Query query = new Query(Criteria.where("_id").is(new ObjectId(msId)));
+        try {
+            mongoTemplate.remove(query, "message_info");
+        } catch (Exception e) {
+            logger.error("deleteMessageInfo|Exception|" + e.getMessage(), e);
+        }
     }
 
     public long fillSeenCampaign(String msisdn) {
@@ -51,21 +74,19 @@ public class MongoDao {
             UpdateResult updateResult = mongoTemplate.updateFirst(query, new Update().set("status", 1), CamId_MessageInfo.class);
             result = updateResult.getModifiedCount();
         } catch (Exception e) {
-            logger.error("deleteMessageInfo|Exception|" + e.getMessage(), e);
+            logger.error("fillSeenCampaign|Exception|" + e.getMessage(), e);
         }
         return result;
     }
 
     public void updateCampaign(String msId) {
-        Query query = new Query(Criteria.where("id").is(msId));
+        Query query = new Query(Criteria.where("_id").is(new ObjectId(msId)).and("status").is(0));
         try {
-            CamId_MessageInfo messageInfo = mongoTemplate.findOne(query, CamId_MessageInfo.class);
-            if (messageInfo != null) {
-                messageInfo.setStatus(1);
-                mongoTemplate.save(messageInfo, "messageInfo");
-            }
-        } catch (Exception e) {
-            logger.error("updateNotification|Exception|" + e.getMessage(), e);
+            mongoTemplate.updateFirst(query, new Update().set("status", 1), "message_info");
+
+        } catch (
+                Exception e) {
+            logger.error("updateCampaign|Exception|" + e.getMessage(), e);
         }
     }
 

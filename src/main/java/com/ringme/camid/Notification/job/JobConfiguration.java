@@ -20,9 +20,10 @@ public class JobConfiguration extends QuartzJobBean {
         try {
             service.process_Campaign(campaign);
 //            service.refreshNotification(notification.getId());
-            logger.info("NotificationJob|Process_Notification|JobKey|job." + campaign.getId());
+            logger.info("JobConfiguration|Process|Campaign|" + campaign.getId());
         } catch (Exception e) {
-            logger.error("NotificationJob|Exception|" + e.getMessage(), e);
+            service.updateCampaign(campaign.getId(), 3);
+            logger.error("JobConfiguration|Exception|" + e.getMessage(), e);
         }
     }
 }

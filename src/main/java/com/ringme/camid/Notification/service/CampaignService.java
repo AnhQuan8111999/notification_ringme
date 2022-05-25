@@ -94,14 +94,8 @@ public class CampaignService {
         scheduler.start();
     }
 
-
-    @Scheduled(cron = "0 10 15 * * ?")
-    public void Test() {
-        System.out.println("test " + Calendar.getInstance().getTime());
-    }
-
     // Lay danh sach campaign
-//    @Scheduled(initialDelay = 1000, fixedDelay = 30000)
+    @Scheduled(cron = "0/10 * * * * ?")
     public void LoadCampaign() {
         List<Campaign> list = new ArrayList<>();
         List<Campaign> list1 = new ArrayList<>();
@@ -112,6 +106,7 @@ public class CampaignService {
         else number_of_page = (totalCampaign / 20) + 1;
         if (counter > number_of_page) counter = 0;
         try {
+            logger.info("LoadCampaign|LoadCampaign|Page|" + counter + "|Size|" + page_size);
             list = campaignDao.getCampaign();
             list1 = campaignDao.getCampaignProcessing(counter, page_size);
             counter++; // tang page len 1 don vi
@@ -149,7 +144,7 @@ public class CampaignService {
                         // len lich
                         schedule(campaign);
                         // update -> process_status = 1
-                        updateCampaign(campaign.getId());
+                        updateCampaign(campaign.getId(), 1);
                     }
 
                 }
@@ -224,32 +219,38 @@ public class CampaignService {
     public void process_Campaign(Campaign campaign) {
 
         List<String> list = new ArrayList<>();
-        switch (campaign.getInput_type()) {
-            case "text":
-                String[] phones = campaign.getPhone_lists();
-                list = Arrays.asList(phones);
-                //System.out.println(new Gson().toJson(list));
-                break;
-            case "file":
-                String filePath = "/u01/" + campaign.getFile_path();
-                list = processExcel(campaign, filePath);
-                //System.out.println(new Gson().toJson(list));
-                break;
-            case "active_users":
-                process_ActiveUsers(campaign);
-                break;
-            default:
-                logger.error("InputType wrong!");
-                break;
-        }
-        if ("text|file".contains(campaign.getInput_type())) {
-            for (String msisdn : list) {
-                CamId_MessageInfo message = generateMessage(msisdn, campaign);
-                if (message != null) {
-                    mongoDao.saveMessageInfo(message);
+        try {
+            switch (campaign.getInput_type()) {
+                case "text":
+                    String[] phones = campaign.getPhone_lists();
+                    list = Arrays.asList(phones);
+                    //System.out.println(new Gson().toJson(list));
+                    break;
+                case "file":
+                    String filePath = campaign.getFile_path();
+                    list = processExcel(campaign, filePath);
+                    //System.out.println(new Gson().toJson(list));
+                    break;
+                case "active_users":
+                    process_ActiveUsers(campaign);
+                    break;
+                default:
+                    logger.error("InputType wrong!");
+                    break;
+            }
+            if ("text|file".contains(campaign.getInput_type())) {
+                for (String msisdn : list) {
+                    CamId_MessageInfo message = generateMessage(msisdn, campaign);
+                    if (message != null) {
+                        mongoDao.saveMessageInfo(message);
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("process_Campaign|Exception|" + e.getMessage(), e);
+            updateCampaign(campaign.getId(), 3);
         }
+
     }
 
     private void process_ActiveUsers(Campaign campaign) {
@@ -279,7 +280,6 @@ public class CampaignService {
 
     private List<String> processExcel(Campaign fc, String filePath) {
         List<String> list = new ArrayList<>();
-        fc.setTotal_users(100000000);
         int count = 0;
         try (FileInputStream fis = new FileInputStream(filePath);
              XSSFWorkbook wb = new XSSFWorkbook(fis);) {
@@ -299,7 +299,6 @@ public class CampaignService {
                     list.add(msisdn);
                 }
             }
-            fc.setTotal_users(count);
             logger.info("[DEBUG] Campaign finish load file: " + filePath + " with " + count + " rows.");
 
         } catch (Exception e) {
@@ -337,19 +336,19 @@ public class CampaignService {
         if (user != null) {
             if (!"MOCHA_UNKNOWN".contains(user.getRegid()) && user.getPlatform().equalsIgnoreCase("ANDROID")) {
                 message = makeMessageCampaign(campaign, user);
-//                System.out.println(message);
+                sendOA(msisdn, message);
+                messageInfo.setMsisdn(msisdn);
+                messageInfo.setContent(campaign.getMessage());
+                messageInfo.setDeep_link(campaign.getDeeplink());
+                messageInfo.setThumbnail(campaign.getImage());
+                messageInfo.setNotified_date(new Date());
+                messageInfo.setType("Notification");
+                messageInfo.setStatus(0);
+            } else {
+                logger.info("generateMessage|RegId is Empty!");
             }
-            sendOA(msisdn, message);
-//            messageInfo.setId(generateRandomString(20));
-            messageInfo.setMsisdn(msisdn);
-            messageInfo.setContent(campaign.getMessage());
-            messageInfo.setDeep_link(campaign.getDeeplink());
-            messageInfo.setThumbnail(campaign.getImage());
-            messageInfo.setNotified_date(new Date());
-            messageInfo.setType("Notification");
-            //logger.info("generateMessage|GetDate|"+Calendar.getInstance().getTime());
-            messageInfo.setStatus(0);
-            //messageInfo.setIdOA("0");
+        } else {
+            logger.info("generateMessage|User is Empty!");
         }
         // push messageInfo to fcm
         return messageInfo;
@@ -370,7 +369,7 @@ public class CampaignService {
 //        JsonObject body = jsonObject.getAsJsonObject("body");
 //        System.out.println(body.get("title"));
 
-        rabbitTemplate.send("campaign_android_v2", oaMessage);
+//        rabbitTemplate.send("campaign_android_v2", oaMessage);
 
     }
 
@@ -457,9 +456,9 @@ public class CampaignService {
     }
 
     // dang xu ly
-    public void updateCampaign(String id) {
+    public void updateCampaign(String id, int status) {
         try {
-            campaignDao.updateCampaignV2(id);
+            campaignDao.updateCampaign(id, status);
         } catch (Exception e) {
             logger.error("updateCampaign|Exception|" + e.getMessage(), e);
         }

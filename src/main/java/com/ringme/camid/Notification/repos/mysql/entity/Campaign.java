@@ -36,14 +36,14 @@ public class Campaign {
     private int process_status;
     private String segment_id;
     private String[] phone_lists;
-    private int total_users;
     private String file_path;
     private String input_type;
+    private Date created_at;
+    private Date updated_at;
 
     public void setPhones(String phones) {
         if (null != phones) {
             this.phone_lists = phones.split("\\,");
-            this.total_users = this.phone_lists.length;
         }
     }
 }
