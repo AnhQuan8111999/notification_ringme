@@ -22,6 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.quartz.*;
 
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -44,9 +45,9 @@ public class CampaignService {
     private MongoDao mongoDao;
     @Autowired
     private CampaignDaoImpl campaignDao;
-//    @Autowired
-////    @Qualifier(value = "rabbitmqTemplate")
-//    private RabbitTemplate rabbitTemplate;
+    @Autowired
+//    @Qualifier(value = "rabbitmqTemplate")
+    private RabbitTemplate rabbitTemplate;
 
     private String msisdnRegex = "\\+?\\d+";
     SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
@@ -198,7 +199,7 @@ public class CampaignService {
                 .replace("_BIG_IMAGE", campaign.getImage())
                 .replace("_RECEIVER_", user.getUsername())
 //                .replace("_URL_", campaign.getDeep_link() + "?ref=" + campaign.getDeeplink_param())
-                .replace("_URL_", campaign.getDeeplink() + "?ref=" + campaign.getDeeplink_param())
+                .replace("_URL_", campaign.getDeeplink())
 //                .replace("_BODY_", campaign.getMsgContent())
                 .replace("_TYPE_", "Notification")
                 .replace("_TTL_", "604800");
@@ -342,7 +343,7 @@ public class CampaignService {
 //            messageInfo.setId(generateRandomString(20));
             messageInfo.setMsisdn(msisdn);
             messageInfo.setContent(campaign.getMessage());
-            messageInfo.setDeep_link(campaign.getDeeplink() + "?ref=" + campaign.getDeeplink_param());
+            messageInfo.setDeep_link(campaign.getDeeplink());
             messageInfo.setThumbnail(campaign.getImage());
             messageInfo.setNotified_date(new Date());
             messageInfo.setType("Notification");
@@ -369,7 +370,7 @@ public class CampaignService {
 //        JsonObject body = jsonObject.getAsJsonObject("body");
 //        System.out.println(body.get("title"));
 
-//        rabbitTemplate.send("campaign_android_v2", oaMessage);
+        rabbitTemplate.send("campaign_android_v2", oaMessage);
 
     }
 
@@ -404,7 +405,6 @@ public class CampaignService {
                     .withSchedule(cronSchedule(entity.getCron_expression())).build();
             JobKey key = crontab.getKey();
             // System.out.println(key);
-
             if (scheduler.checkExists(key) == false) {
                 logger.info("schedule|INFO|JobKey|" + key);
                 scheduler.scheduleJob(crontab, trigger);
@@ -519,6 +519,4 @@ public class CampaignService {
         return count;
     }
 
-    public void process_Notification(Campaign campaign) {
-    }
 }

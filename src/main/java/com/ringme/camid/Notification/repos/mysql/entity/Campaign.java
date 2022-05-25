@@ -20,7 +20,6 @@ public class Campaign {
     private String message;
     private String image;
     private String deeplink;
-    private String deeplink_param;
     private Date started_at;
     private Date ended_at;
     private int enable_popup;

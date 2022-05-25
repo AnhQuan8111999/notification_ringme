@@ -18,7 +18,7 @@ public class JobConfiguration extends QuartzJobBean {
         CampaignService service = (CampaignService) dataMap.get("service");
         Campaign campaign = (Campaign) dataMap.get("entity");
         try {
-            service.process_Notification(campaign);
+            service.process_Campaign(campaign);
 //            service.refreshNotification(notification.getId());
             logger.info("NotificationJob|Process_Notification|JobKey|job." + campaign.getId());
         } catch (Exception e) {
