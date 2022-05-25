@@ -31,9 +31,9 @@ public class DataSourceConfig {
 //        System.out.println(driverClass+" "+ url+" "++" "+password);
         DriverManagerDataSource source = new DriverManagerDataSource();
         source.setDriverClassName("com.mysql.jdbc.Driver");
-        source.setUrl("jdbc:mysql://192.168.1.88:3306/kakoakcms");
-        source.setUsername("dbcms");
-        source.setPassword("120M1Tko4kaK53rv1cE");
+        source.setUrl("jdbc:mysql://192.168.1.88:3306/helpdesk_camid");
+        source.setUsername("ukakoak");
+        source.setPassword("Kakoak@123");
         return source;
     }
 
