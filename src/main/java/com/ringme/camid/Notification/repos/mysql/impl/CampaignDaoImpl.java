@@ -2,12 +2,10 @@ package com.ringme.camid.Notification.repos.mysql.impl;
 
 import com.ringme.camid.Notification.repos.mysql.CampaignDao;
 import com.ringme.camid.Notification.repos.mysql.entity.Campaign;
-import com.ringme.camid.Notification.service.CampaignService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -29,7 +27,9 @@ public class CampaignDaoImpl implements CampaignDao {
     @Override
     public List<Campaign> getCampaign() {
         List<Campaign> campaigns = new ArrayList<>();
-        String sql = "SELECT * FROM camid_campaign WHERE active=1 AND process_status IN (0,1)";
+        String sql = "SELECT cc.*, cs.title as seg_name,cs.phone_list, cs.file_path, cs.count, cs.input_type\n" +
+                " FROM camid_campaign cc INNER JOIN camid_segment cs \n" +
+                " WHERE cc.segment_id=cs.id AND cc.active=1 AND cc.process_status IN (0,1)";
         campaigns = jdbcTemplate.query(sql, new RowMapper<Campaign>() {
             @Override
             public Campaign mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -57,6 +57,9 @@ public class CampaignDaoImpl implements CampaignDao {
                 campaign.setActive(rs.getInt("active"));
                 campaign.setProcess_status(rs.getInt("process_status"));
                 campaign.setSegment_id(rs.getString("segment_id"));
+                campaign.setPhones(rs.getString("phone_list"));
+                campaign.setInput_type(rs.getString("input_type"));
+                campaign.setFile_path(rs.getString("file_path"));
                 return campaign;
             }
         });
@@ -126,6 +129,7 @@ public class CampaignDaoImpl implements CampaignDao {
                 campaign.setMessage(rs.getString("message"));
                 campaign.setImage(rs.getString("image"));
                 campaign.setDeeplink(rs.getString("deeplink"));
+                campaign.setDeeplink_param(rs.getString("deeplink_param"));
                 campaign.setStarted_at(rs.getDate("started_at"));
                 campaign.setEnded_at(rs.getDate("ended_at"));
                 campaign.setEnable_popup(rs.getInt("enable_popup"));
@@ -145,5 +149,52 @@ public class CampaignDaoImpl implements CampaignDao {
             }
         });
         return campaigns;
+    }
+
+    public int getCountCampaign() {
+        int result = 0;
+        return result;
+    }
+
+    public List<Campaign> getCampaignProcessing(int counter, int page_size) {
+        List<Campaign> list = new ArrayList<>();
+
+        return list;
+    }
+
+    public int getCountUser() {
+        int result = 0;
+
+        return result;
+    }
+
+    public List<String> getActiveUsers(int offset, int limit) {
+        List<String> list = new ArrayList<>();
+
+        return list;
+    }
+
+    public void updateCampaignV2(String id) {
+    }
+
+    public void refreshCampaign(String id) {
+    }
+
+    public List<String> getProcessedCampaignId() {
+        List<String> list = new ArrayList<>();
+
+        return list;
+    }
+
+    public int finishCampaign(String id) {
+        int result = 0;
+
+        return result;
+    }
+
+    public int finishCampaign() {
+        int result = 0;
+
+        return result;
     }
 }
