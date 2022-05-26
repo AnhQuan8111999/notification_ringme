@@ -8,7 +8,6 @@ import com.ringme.camid.Notification.repos.mysql.entity.Campaign;
 import com.ringme.camid.Notification.repos.mysql.entity.Segment;
 import com.ringme.camid.Notification.repos.mysql.impl.CampaignDaoImpl;
 import com.ringme.camid.Notification.service.CampaignService;
-import com.ringme.camid.Notification.service.NofiticationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
