@@ -80,13 +80,32 @@ public class CampaignService {
             "    }\n" +
             "  },\n" +
             "  \"time_to_live\": _TTL_ }";
-    public static String campaign_template = "{\n" +
-            "  \"msgid\": \"_MSGID_\",\n" +
-            "  \"regid\": \"_REGID_\",\n" +
-            "  \"title\": \"_TITLE_\",\n" +
-            "  \"body\": {\"title\":\"_TITLE_\",\"code\":\"201\",\"image\":\"_IMAGE_PATH_\",\"sender\":\"_SENDER_\",\"type\":\"_TYPE_\",\"msg_body\":\"_MSG_BODY_\",\"msgid\":\"_MSGID_\", \"deeplink\":\"_DEEP_LINK_\"},\n" +
-            "  \"msisdn\": \"_MSISDN_\",\n" +
-            "  \"revision\": \"_REVISION_\"}";
+    public static String campaign_template = "  {\n" +
+            "  \"to\": \"_TO_\",\n" +
+            "  \"message_id\": \"_MSGID_\",\n" +
+            "  \"data\": {\n" +
+            "     \"content\": {\n" +
+            "      \"title\": \"_TITLE_\",\n" +
+            "      \"code\": \"215\",\n" +
+            "      \"avatar\": \"_IMAGE_\",\n" +
+            "      \"content\": \"_CONENT_\",\n" +
+            "      \"layout_position\":\"_LAYOUT_POSITION_\",\n" +
+            "      \"layout_style\":\"_LAYOUT_STYLE_\",\n" +
+            "      \"button_layout\":\"_BUTTON_LAYOUT_\",\n" +
+            "      \"button\":\"_BUTTON_\",\n" +
+            "      \"display_in_app\":\"_DISPLAY_IN_APP_\",\n" +
+            "      \"on_event\":\"_ON_EVENT_\",\n" +
+            "      \"delay\":_DELAY_,\n" +
+            "      \"receiver\":\"_RECEIVER_\",\n" +
+            "      \"big_img\":\"_BIG_IMAGE_\",\n" +
+            "      \"url\":\"_URL_\"\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"notification\": {\n" +
+            "    \"body\": \"HELLOO!\",\n" +
+            "    \"title\": \"HELLO\"\n" +
+            "  },\n" +
+            "  \"time_to_live\": _TTL_ \n}";
 
     private static final Logger logger = LogManager.getLogger(CampaignService.class);
 
@@ -180,25 +199,32 @@ public class CampaignService {
     }
 
     public String makeMessageCampaign(Campaign campaign, User user) {
-        String msg = message_template;
+        String msg = campaign_template;
         String id = generateRandomString(20);
-//        String deeplink = "";
-//        if ("game".contains(campaign.getType())) {
-//            deeplink = getDeepLinkGame(Integer.parseInt(campaign.getDeeplink_param()));
-//        } else {
-//            deeplink = campaign.getDeep_link() + "?ref=" + campaign.getDeeplink_param();
-//        }
+        JsonObject button1 = new JsonObject();
+        button1.addProperty("name", campaign.getButton1_name());
+        button1.addProperty("deeplink", campaign.getButton1_deeplink());
+        JsonObject button2 = new JsonObject();
+        button2.addProperty("name", campaign.getButton2_name());
+        button2.addProperty("deeplink", campaign.getButton2_deeplink());
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("button1", button1);
+        jsonObject.add("button2", button2);
         msg = msg.replace("_TO_", user.getRegid())
                 .replace("_MSGID_", id)
-//                .replace("_TITLE_", campaign.getTitle())
                 .replace("_IMAGE_", campaign.getImage())
                 .replace("_CONTENT_", campaign.getMessage())
                 .replace("_BIG_IMAGE", campaign.getImage())
                 .replace("_RECEIVER_", user.getUsername())
-//                .replace("_URL_", campaign.getDeep_link() + "?ref=" + campaign.getDeeplink_param())
                 .replace("_URL_", campaign.getDeeplink())
-//                .replace("_BODY_", campaign.getMsgContent())
-                .replace("_TYPE_", "Notification")
+                .replace("_TITLE_", campaign.getTitle())
+                .replace("_LAYOUT_POSITION_", campaign.getLayout_position())
+                .replace("_LAYOUT_STYLE_", campaign.getLayout_style() + "")
+                .replace("_BUTTON_LAYOUT_", campaign.getButton_layout() + "")
+                .replace("_BUTTON_", jsonObject.toString())
+                .replace("_DISPLAY_IN_APP_", campaign.getDisplay_in_app() + "")
+                .replace("_ON_EVENT_", campaign.getOn_event())
+                .replace("_DELAY_", "" + campaign.getDelay() * 1000)
                 .replace("_TTL_", "604800");
         return msg;
     }
