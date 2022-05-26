@@ -67,7 +67,6 @@ public class CampaignDaoImpl implements CampaignDao {
                             campaign.setPhones(rs.getString("phone_list"));
                             campaign.setInput_type(rs.getString("input_type"));
                             campaign.setFile_path(rs.getString("file_path"));
-                            campaign.setCreated_at(rs.getDate("created_at"));
                             campaign.setUpdated_at(rs.getDate("updated_at"));
                             return campaign;
                         }
@@ -123,7 +122,6 @@ public class CampaignDaoImpl implements CampaignDao {
                 campaign.setPhones(rs.getString("phone_list"));
                 campaign.setInput_type(rs.getString("input_type"));
                 campaign.setFile_path(rs.getString("file_path"));
-                campaign.setCreated_at(rs.getDate("created_at"));
                 campaign.setUpdated_at(rs.getDate("updated_at"));
                 return campaign;
             }
@@ -219,7 +217,6 @@ public class CampaignDaoImpl implements CampaignDao {
                         campaign.setPhones(rs.getString("phone_list"));
                         campaign.setInput_type(rs.getString("input_type"));
                         campaign.setFile_path(rs.getString("file_path"));
-                        campaign.setCreated_at(rs.getDate("created_at"));
                         campaign.setUpdated_at(rs.getDate("updated_at"));
                         return campaign;
                     }
