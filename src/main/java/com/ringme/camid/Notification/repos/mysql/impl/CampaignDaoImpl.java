@@ -306,4 +306,12 @@ public class CampaignDaoImpl implements CampaignDao {
         return result;
     }
 
+    public void updateCampaignActive(String id, int active) {
+        String SQL = " UPDATE camid_notification set active =:active where id =:id";
+        try {
+            jdbcTemplate.update(SQL, new MapSqlParameterSource().addValue("active", active).addValue("id", id));
+        } catch (Exception e) {
+            logger.error("updateCampaignActive|Exception|" + e.getMessage(), e);
+        }
+    }
 }

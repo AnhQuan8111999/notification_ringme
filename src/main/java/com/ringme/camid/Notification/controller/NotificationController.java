@@ -135,9 +135,9 @@ public class NotificationController {
             jsonObject.addProperty("message", "success");
             jsonObject.addProperty("data", count);
             long proc = System.currentTimeMillis() - start;
-            logger.info("updateMessageInfo|Msisdn|" + msisdn + "|ExecuteTime|" + proc);
+            logger.info("fillSeenNotification|Msisdn|" + msisdn + "|ExecuteTime|" + proc);
         } catch (Exception e) {
-            logger.error("updateMessageInfo|Exception|" + e.getMessage(), e);
+            logger.error("fillSeenNotification|Exception|" + e.getMessage(), e);
             jsonObject.addProperty("code", 400);
             jsonObject.addProperty("message", "fail");
             jsonObject.addProperty("data", "null");
@@ -199,7 +199,7 @@ public class NotificationController {
         } catch (Exception e) {
             logger.error("refreshNotification|Exception|" + e.getMessage(), e);
             jsonObject.addProperty("code", 400);
-            jsonObject.addProperty("message", "stop shedule fail");
+            jsonObject.addProperty("message", "refresh shedule fail");
             jsonObject.addProperty("data", "");
         }
         result = jsonObject.toString();
@@ -247,14 +247,40 @@ public class NotificationController {
         try {
             campaignService.pushNotification(campaign, segment);
             jsonObject.addProperty("code", 200);
-            jsonObject.addProperty("message", "delete messageinfo success");
+            jsonObject.addProperty("message", "push notification success");
 //            jsonObject.addProperty("data", msId);
             long proc = System.currentTimeMillis() - start;
             logger.info("pushNotification|Success|ExecuteTime|" + proc);
         } catch (Exception e) {
             logger.error("pushNotification|Exception|" + e.getMessage(), e);
             jsonObject.addProperty("code", 400);
-            jsonObject.addProperty("message", "send test push fail");
+            jsonObject.addProperty("message", "push notification fail");
+            jsonObject.addProperty("data", "");
+        }
+        return result;
+    }
+
+    /**
+     * SEND TEST PUSH
+     */
+    @RequestMapping(value = "/notification/update", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String pushNotification(@RequestParam("id") String id,
+                                   @RequestParam("active") int active) {
+        String result = "";
+        long start = System.currentTimeMillis();
+        JsonObject jsonObject = new JsonObject();
+        try {
+            campaignService.updateCampaignActive(id, active);
+            jsonObject.addProperty("code", 200);
+            jsonObject.addProperty("message", "update campaign success");
+//            jsonObject.addProperty("data", msId);
+            long proc = System.currentTimeMillis() - start;
+            logger.info("pushNotification|Success|ExecuteTime|" + proc);
+        } catch (Exception e) {
+            logger.error("pushNotification|Exception|" + e.getMessage(), e);
+            jsonObject.addProperty("code", 400);
+            jsonObject.addProperty("message", "update campaign fail");
             jsonObject.addProperty("data", "");
         }
         return result;

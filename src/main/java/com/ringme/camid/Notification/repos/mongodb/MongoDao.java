@@ -38,7 +38,7 @@ public class MongoDao {
             Query query = new Query();
             query.addCriteria(Criteria.where("username").is(msisdn));
             query.addCriteria(Criteria.where("regid").exists(true));
-            user = (User) mongoTemplate.findOne(query, User.class, "users");
+            user = mongoTemplate.findOne(query, User.class, "users");
         } catch (Exception e) {
             logger.error("getRegID|Exception|" + e.getMessage(), e);
         }

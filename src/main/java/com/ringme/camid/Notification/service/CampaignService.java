@@ -210,6 +210,7 @@ public class CampaignService {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("button1", button1);
         jsonObject.add("button2", button2);
+        String button = jsonObject.toString().replace("\"{", "{").replace("}\"", "}");
         msg = msg.replace("_TO_", user.getRegid())
                 .replace("_MSGID_", id)
                 .replace("_IMAGE_", campaign.getImage())
@@ -221,28 +222,14 @@ public class CampaignService {
                 .replace("_LAYOUT_POSITION_", campaign.getLayout_position())
                 .replace("_LAYOUT_STYLE_", campaign.getLayout_style() + "")
                 .replace("_BUTTON_LAYOUT_", campaign.getButton_layout() + "")
-                .replace("_BUTTON_", jsonObject.toString())
+                .replace("_BUTTON_", button)
                 .replace("_DISPLAY_IN_APP_", campaign.getDisplay_in_app() + "")
                 .replace("_ON_EVENT_", campaign.getOn_event())
+                .replace("_BIG_IMAGE_", campaign.getImage())
                 .replace("_DELAY_", "" + campaign.getDelay() * 1000)
                 .replace("_TTL_", "604800");
         return msg;
     }
-
-//    public String getDeepLinkGame(long game_id) {
-//        String result = "";
-//        try {
-//            if (campaignDao.getDeepLinkGame(game_id).isEmpty()) {
-//                result = "kakoak://gamehtml?ref=" + game_id;
-//            } else {
-//                result = campaignDao.getDeepLinkGame(game_id);
-//            }
-//
-//        } catch (Exception e) {
-//            logger.error("getDeepLinkGame|Exception|" + e.getMessage(), e);
-//        }
-//        return result;
-//    }
 
     public void process_Campaign(Campaign campaign) {
 
@@ -372,14 +359,16 @@ public class CampaignService {
                 messageInfo.setNotified_date(new Date());
                 messageInfo.setType("Notification");
                 messageInfo.setStatus(0);
+                return messageInfo;
             } else {
                 logger.info("generateMessage|RegId is Empty!");
+                return new CamId_MessageInfo();
             }
         } else {
             logger.info("generateMessage|User is Empty!");
+            return new CamId_MessageInfo();
         }
         // push messageInfo to fcm
-        return messageInfo;
     }
 
 
@@ -558,6 +547,14 @@ public class CampaignService {
             updateCampaign(campaign.getId(), 1);
         } catch (Exception e) {
             logger.error("pushNotification|Exception|" + e.getMessage(), e);
+        }
+    }
+
+    public void updateCampaignActive(String id, int active) {
+        try {
+            campaignDao.updateCampaignActive(id, active);
+        } catch (Exception e) {
+            logger.error("updateCampaignActive|Exception|" + e.getMessage(), e);
         }
     }
 }
