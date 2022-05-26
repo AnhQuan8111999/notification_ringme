@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.ringme.camid.Notification.repos.mysql.entity.Campaign;
+import com.ringme.camid.Notification.repos.mysql.entity.Segment;
 import com.ringme.camid.Notification.repos.mysql.impl.CampaignDaoImpl;
 import com.ringme.camid.Notification.service.CampaignService;
 import com.ringme.camid.Notification.service.NofiticationService;
@@ -230,6 +231,32 @@ public class NotificationController {
 
         }
         result = jsonObject.toString();
+        return result;
+    }
+
+    /**
+     * SEND TEST PUSH
+     */
+    @RequestMapping(value = "/notification/push", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String pushNotification(@RequestBody Campaign campaign,
+                                   @RequestBody Segment segment) {
+        String result = "";
+        long start = System.currentTimeMillis();
+        JsonObject jsonObject = new JsonObject();
+        try {
+            campaignService.pushNotification(campaign, segment);
+            jsonObject.addProperty("code", 200);
+            jsonObject.addProperty("message", "delete messageinfo success");
+//            jsonObject.addProperty("data", msId);
+            long proc = System.currentTimeMillis() - start;
+            logger.info("pushNotification|Success|ExecuteTime|" + proc);
+        } catch (Exception e) {
+            logger.error("pushNotification|Exception|" + e.getMessage(), e);
+            jsonObject.addProperty("code", 400);
+            jsonObject.addProperty("message", "send test push fail");
+            jsonObject.addProperty("data", "");
+        }
         return result;
     }
 }

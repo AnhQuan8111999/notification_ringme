@@ -10,6 +10,7 @@ import com.ringme.camid.Notification.repos.mongodb.MongoDao;
 import com.ringme.camid.Notification.repos.mongodb.entity.CamId_MessageInfo;
 import com.ringme.camid.Notification.repos.mongodb.entity.User;
 import com.ringme.camid.Notification.repos.mysql.entity.Campaign;
+import com.ringme.camid.Notification.repos.mysql.entity.Segment;
 import com.ringme.camid.Notification.repos.mysql.impl.CampaignDaoImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -104,12 +105,13 @@ public class CampaignService {
         int number_of_page = 0;
         if (totalCampaign % 20 == 0) number_of_page = totalCampaign / 20;
         else number_of_page = (totalCampaign / 20) + 1;
-        if (counter > number_of_page) counter = 0;
+
         try {
             logger.info("LoadCampaign|LoadCampaign|Page|" + counter + "|Size|" + page_size);
             list = campaignDao.getCampaign();
             list1 = campaignDao.getCampaignProcessing(counter, page_size);
-            counter++; // tang page len 1 don vi
+            if (counter >= number_of_page) counter = 0;
+            else counter++; // tang page len 1 don vi
             // xu ly campaign new
             nonProcess_Campaign(list);
             // them campaign co process_status = 1
@@ -518,4 +520,18 @@ public class CampaignService {
         return count;
     }
 
+    public void pushNotification(Campaign campaign, Segment segment) {
+        try {
+            if ("text".contains(segment.getInput_type())) {
+                campaign.setPhones(segment.getPhone_list());
+            } else if ("file".contains(segment.getInput_type())) {
+                campaign.setFile_path(segment.getFile_path());
+            }
+            campaign.setInput_type(segment.getInput_type());
+            process_Campaign(campaign);
+            updateCampaign(campaign.getId(), 1);
+        } catch (Exception e) {
+            logger.error("pushNotification|Exception|" + e.getMessage(), e);
+        }
+    }
 }
