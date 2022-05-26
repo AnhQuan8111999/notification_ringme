@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import java.util.Date;
 
@@ -24,6 +25,7 @@ public class Campaign {
     private Date ended_at;
     private int enable_popup;
     private String version;
+    @Nullable
     private String cron_expression;
     private int display_in_app;
     private String on_event;
@@ -35,11 +37,20 @@ public class Campaign {
     private int active;
     private int process_status;
     private String segment_id;
+    @Nullable
     private String[] phone_lists;
+    @Nullable
     private String file_path;
     private String input_type;
-    private Date created_at;
     private Date updated_at;
+    @Nullable
+    private String button1_name;
+    @Nullable
+    private String button1_deeplink;
+    @Nullable
+    private String button2_name;
+    @Nullable
+    private String button2_deeplink;
 
     public void setPhones(String phones) {
         if (null != phones) {
