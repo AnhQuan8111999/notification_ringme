@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="trace">
- 
+
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-	    <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{1}:%L - %msg%n" />
+            <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{1}:%L - %msg%n" />
 
         </Console>
-                                 
-        <RollingFile name="notification_inapp_INFO" filename="logs/notification_inapp.log"   filepattern="logs/notification_inapp.log.125.1.%d{YYYY-MM-dd}.gz">
-<!--	        <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{2} (%M(%L)) %c{1} %msg%n" />-->
+
+        <RollingFile name="notification_camid_INFO" filename="logs/notification_camid.log"   filepattern="logs/notification_camid.log.125.1.%d{YYYY-MM-dd}.gz">
+            <!--	        <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{2} (%M(%L)) %c{1} %msg%n" />-->
             <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{1}:%L - %msg%n"/>
-                <Policies>
-	                <TimeBasedTriggeringPolicy />
-                </Policies>
-                <DefaultRolloverStrategy max="7" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="7" />
         </RollingFile>
-        <RollingFile name="notification_inapp_ERROR" filename="logs/notification_inapp_ERROR.log"   filepattern="logs/notification_inapp_ERROR.125.1.%d{YYYY-MM-dd}.log.gz">
-<!--	        <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{1} %msg%n" />-->
+        <RollingFile name="notification_camid_ERROR" filename="logs/notification_camid.log"   filepattern="logs/notification_camid.125.1.%d{YYYY-MM-dd}.log.gz">
+            <!--	        <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{1} %msg%n" />-->
             <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} %-5p %c{1}:%L - %msg%n"/>
-                <Policies>
-        	        <SizeBasedTriggeringPolicy size="300 MB" />
-                </Policies>
-                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
-                <DefaultRolloverStrategy max="2" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="300 MB" />
+            </Policies>
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <DefaultRolloverStrategy max="2" />
         </RollingFile>
 
     </Appenders>
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="notification_inapp_INFO" />
-            <AppenderRef ref="notification_inapp_ERROR" />
+            <AppenderRef ref="notification_camid_INFO" />
+            <AppenderRef ref="notification_camid_ERROR" />
             <AppenderRef ref="Console" />
-			
         </Root>
-	 <!-- <logger name="org.springframework" level="DEBUG" />  -->
+        <!-- <logger name="org.springframework" level="DEBUG" />  -->
     </Loggers>
 </Configuration>
 

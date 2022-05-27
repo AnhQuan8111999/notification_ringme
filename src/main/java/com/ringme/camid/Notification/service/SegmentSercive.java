@@ -7,10 +7,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SegmentSercive {
-    @Autowired
-    private MongoDao mongoDao;
 
-    public void saveMessageInfo(CamId_MessageInfo messageInfo) {
-        mongoDao.saveMessageInfo(messageInfo);
-    }
 }

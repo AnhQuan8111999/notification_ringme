@@ -12,6 +12,8 @@ import com.ringme.camid.Notification.repos.mongodb.entity.User;
 import com.ringme.camid.Notification.repos.mysql.entity.Campaign;
 import com.ringme.camid.Notification.repos.mysql.entity.Segment;
 import com.ringme.camid.Notification.repos.mysql.impl.CampaignDaoImpl;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.core.Message;
@@ -280,7 +282,7 @@ public class CampaignService {
                 List<String> list = campaignDao.getActiveUsers(offset, limit);
                 for (String s : list) {
                     CamId_MessageInfo message = generateMessage(s, campaign);
-                    if (message != null) {
+                    if (message.getId() != null) {
                         mongoDao.saveMessageInfo(message);
                     }
                 }
@@ -386,7 +388,7 @@ public class CampaignService {
 //        JsonObject body = jsonObject.getAsJsonObject("body");
 //        System.out.println(body.get("title"));
 
-//        rabbitTemplate.send("campaign_android_v2", oaMessage);
+        rabbitTemplate.send("camid_notification", oaMessage);
 
     }
 
