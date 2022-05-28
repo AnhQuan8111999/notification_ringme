@@ -117,7 +117,7 @@ public class CampaignService {
     }
 
     // Lay danh sach campaign
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void LoadCampaign() {
         List<Campaign> list = new ArrayList<>();
         List<Campaign> list1 = new ArrayList<>();
