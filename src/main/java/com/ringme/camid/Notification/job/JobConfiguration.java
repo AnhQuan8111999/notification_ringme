@@ -22,7 +22,7 @@ public class JobConfiguration extends QuartzJobBean {
 //            service.refreshNotification(notification.getId());
             logger.info("JobConfiguration|Process|Campaign|" + campaign.getId());
         } catch (Exception e) {
-            service.updateCampaign(campaign.getId(), 3);
+//            service.updateCampaign(campaign.getId(), 3);
             logger.error("JobConfiguration|Exception|" + e.getMessage(), e);
         }
     }

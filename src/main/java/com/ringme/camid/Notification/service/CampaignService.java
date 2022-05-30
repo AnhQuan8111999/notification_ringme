@@ -27,6 +27,7 @@ import org.quartz.*;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,8 @@ public class CampaignService {
     @Autowired
 //    @Qualifier(value = "rabbitmqTemplate")
     private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     private String msisdnRegex = "\\+?\\d+";
     SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
@@ -82,32 +85,31 @@ public class CampaignService {
             "    }\n" +
             "  },\n" +
             "  \"time_to_live\": _TTL_ }";
-    public static String campaign_template = "  {\n" +
-            "  \"to\": \"_TO_\",\n" +
+    public static String campaign_template = "{ \"to\": \"_TO_\",\n" +
             "  \"message_id\": \"_MSGID_\",\n" +
             "  \"data\": {\n" +
             "     \"content\": {\n" +
             "      \"title\": \"_TITLE_\",\n" +
-            "      \"code\": \"215\",\n" +
+            "      \"code\": \"217\",\n" +
             "      \"avatar\": \"_IMAGE_\",\n" +
             "      \"content\": \"_CONENT_\",\n" +
-            "      \"layout_position\":\"_LAYOUT_POSITION_\",\n" +
+            "      \"is_full_screen\":\"_FULL_SCREEN_\",\n" +
             "      \"layout_style\":\"_LAYOUT_STYLE_\",\n" +
             "      \"button_layout\":\"_BUTTON_LAYOUT_\",\n" +
-            "      \"button\":\"_BUTTON_\",\n" +
+            "      \"button\":_BUTTON_,\n" +
             "      \"display_in_app\":\"_DISPLAY_IN_APP_\",\n" +
             "      \"on_event\":\"_ON_EVENT_\",\n" +
             "      \"delay\":_DELAY_,\n" +
             "      \"receiver\":\"_RECEIVER_\",\n" +
-            "      \"big_img\":\"_BIG_IMAGE_\",\n" +
-            "      \"url\":\"_URL_\"\n" +
+            "      \"big_img\":\"_IMAGE_\",\n" +
+            "      \"deeplink\":\"_DEPPLINK_\"\n" +
             "    }\n" +
             "  },\n" +
             "  \"notification\": {\n" +
-            "    \"body\": \"HELLOO!\",\n" +
-            "    \"title\": \"HELLO\"\n" +
+            "    \"body\": \"_CONENT_\",\n" +
+            "    \"title\": \"_TITLE_\"\n" +
             "  },\n" +
-            "  \"time_to_live\": _TTL_ \n}";
+            "  \"time_to_live\": _TTL_}";
 
     private static final Logger logger = LogManager.getLogger(CampaignService.class);
 
@@ -203,31 +205,36 @@ public class CampaignService {
     public String makeMessageCampaign(Campaign campaign, User user) {
         String msg = campaign_template;
         String id = generateRandomString(20);
-        JsonObject button1 = new JsonObject();
-        button1.addProperty("name", campaign.getButton1_name());
-        button1.addProperty("deeplink", campaign.getButton1_deeplink());
-        JsonObject button2 = new JsonObject();
-        button2.addProperty("name", campaign.getButton2_name());
-        button2.addProperty("deeplink", campaign.getButton2_deeplink());
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("button1", button1);
-        jsonObject.add("button2", button2);
+        if (campaign.getButton1_name() != null && !campaign.getButton1_name().isEmpty()) {
+            JsonObject button1 = new JsonObject();
+            button1.addProperty("name", campaign.getButton1_name());
+            button1.addProperty("deeplink", campaign.getButton1_deeplink());
+            jsonObject.add("button1", button1);
+        }
+        if (campaign.getButton2_name() != null && !campaign.getButton2_name().isEmpty()) {
+            JsonObject button2 = new JsonObject();
+            button2.addProperty("name", campaign.getButton2_name());
+            button2.addProperty("deeplink", campaign.getButton2_deeplink());
+            jsonObject.add("button2", button2);
+        }
         String button = jsonObject.toString().replace("\"{", "{").replace("}\"", "}");
+        int is_full_screen = 0;
+        if (campaign.getLayout_position().equalsIgnoreCase("full_screen")) is_full_screen = 1;
         msg = msg.replace("_TO_", user.getRegid())
                 .replace("_MSGID_", id)
                 .replace("_IMAGE_", campaign.getImage())
                 .replace("_CONTENT_", campaign.getMessage())
-                .replace("_BIG_IMAGE", campaign.getImage())
+                .replace("_IMAGE", campaign.getImage())
                 .replace("_RECEIVER_", user.getUsername())
-                .replace("_URL_", campaign.getDeeplink())
+                .replace("_DEEPLINK_", campaign.getDeeplink())
                 .replace("_TITLE_", campaign.getTitle())
-                .replace("_LAYOUT_POSITION_", campaign.getLayout_position())
+                .replace("_FULL_SCREEN_", is_full_screen + "")
                 .replace("_LAYOUT_STYLE_", campaign.getLayout_style() + "")
                 .replace("_BUTTON_LAYOUT_", campaign.getButton_layout() + "")
                 .replace("_BUTTON_", button)
                 .replace("_DISPLAY_IN_APP_", campaign.getDisplay_in_app() + "")
                 .replace("_ON_EVENT_", campaign.getOn_event())
-                .replace("_BIG_IMAGE_", campaign.getImage())
                 .replace("_DELAY_", "" + campaign.getDelay() * 1000)
                 .replace("_TTL_", "604800");
         return msg;
@@ -266,6 +273,8 @@ public class CampaignService {
         } catch (Exception e) {
             logger.error("process_Campaign|Exception|" + e.getMessage(), e);
             updateCampaign(campaign.getId(), 3);
+            unSchedule(campaign.getId());
+
         }
 
     }
@@ -388,7 +397,8 @@ public class CampaignService {
 //        JsonObject body = jsonObject.getAsJsonObject("body");
 //        System.out.println(body.get("title"));
 
-        rabbitTemplate.send("camid_notification", oaMessage);
+//        rabbitTemplate.send("camid_notification", oaMessage);
+        kafkaTemplate.send("hieu-topic", message);
 
     }
 
