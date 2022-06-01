@@ -1,21 +1,23 @@
 package com.ringme.camid.Notification.repos.mongodb.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Builder
-@Document(value = "message_info")
-public class CamId_MessageInfo {
+@AllArgsConstructor
+@Document(value = "message_survey")
+public class Camid_SurveyMessage {
     @Id
     private String id;
-
     @Field(value = "msisdn")
     private String msisdn;
     @Field(value = "content")
@@ -30,4 +32,11 @@ public class CamId_MessageInfo {
     private int status; //default = 0
     @Field(value = "type")
     private String type;
+    @Field(value = "satisfied")
+    private long satisfied;
+    @Field(value = "normal")
+    private long normal;
+    @Field(value = "unsatisfied")
+    private long unsatisfied;
+
 }

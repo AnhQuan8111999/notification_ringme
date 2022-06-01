@@ -130,7 +130,7 @@ public class CampaignService {
         else number_of_page = (totalCampaign / 20) + 1;
 
         try {
-            logger.info("LoadCampaign|LoadCampaign|Page|" + counter + "|Size|" + page_size);
+            logger.info("LoadCampaign|Page|" + counter + "|Size|" + page_size);
             list = campaignDao.getCampaign();
             list1 = campaignDao.getCampaignProcessing(counter, page_size);
             if (counter >= number_of_page) counter = 0;
@@ -252,7 +252,7 @@ public class CampaignService {
                     break;
                 case "file":
                     String filePath = campaign.getFile_path();
-                    list = processExcel(campaign, filePath);
+                    list = processExcel(filePath);
                     //System.out.println(new Gson().toJson(list));
                     break;
                 case "active_users":
@@ -304,7 +304,7 @@ public class CampaignService {
         }
     }
 
-    private List<String> processExcel(Campaign fc, String filePath) {
+    public List<String> processExcel(String filePath) {
         List<String> list = new ArrayList<>();
         int count = 0;
         try (FileInputStream fis = new FileInputStream(filePath);
