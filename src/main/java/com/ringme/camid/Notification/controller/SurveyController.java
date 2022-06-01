@@ -1,8 +1,8 @@
 package com.ringme.camid.Notification.controller;
 
+import com.google.gson.JsonObject;
 import com.ringme.camid.Notification.repos.mongodb.MongoDao;
 import com.ringme.camid.Notification.service.SurveyService;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,18 +48,23 @@ public class SurveyController {
     /**
      * INCREASE OPTIONS SURVEY
      */
-    @RequestMapping(value = "/getSurvey/home", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/assess", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String increaseOptionSurvey(@RequestParam("msisdn") String msisnd,
-                                       @RequestParam("type") String type,
-                                       @RequestParam("num") int num,
-                                       @RequestParam("surveyId") String id) {
+    public String assessSurvey(@RequestParam("msisdn") String msisnd,
+                               @RequestParam("type") String type,
+                               @RequestParam("num") int num,
+                               @RequestParam("surveyId") String id) {
         String result = "";
         long start = System.currentTimeMillis();
+        JsonObject jsonObject = new JsonObject();
         try {
             mongoDao.increaseSurvey(id, num, type);
+            jsonObject.addProperty("code", 200);
+            jsonObject.addProperty("desc", "successful survey");
+            long proc = System.currentTimeMillis() - start;
+            logger.info("assessSurvey|Msisdn|" + msisnd + "|Type|" + type + "|ExecuteTime|" + proc);
         } catch (Exception e) {
-            logger.error("increaseOptionSurvey|Exception|" + e.getMessage(), e);
+            logger.error("assessSurvey|Exception|" + e.getMessage(), e);
         }
         return result;
     }

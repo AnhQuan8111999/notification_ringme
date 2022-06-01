@@ -130,9 +130,9 @@ public class SurveyService {
             }
             if ("text|file".contains(survey.getInput_type())) {
                 for (String msisdn : list) {
-                    CamId_MessageInfo message = generateMessage(msisdn, survey);
+                    Camid_SurveyMessage message = generateMessage(msisdn, survey);
                     if (message != null) {
-                        mongoDao.saveMessageInfo(message);
+                        mongoDao.saveMessageSurvey(message);
                     }
                 }
             }
@@ -163,9 +163,9 @@ public class SurveyService {
                 int offset = i * limit;
                 List<String> list = campaignDao.getActiveUsers(offset, limit);
                 for (String s : list) {
-                    CamId_MessageInfo message = generateMessage(s, survey);
+                    Camid_SurveyMessage message = generateMessage(s, survey);
                     if (message.getId() != null) {
-                        mongoDao.saveMessageInfo(message);
+                        mongoDao.saveMessageSurvey(message);
                     }
                 }
 //                logger.info("process_ActiveUsers|SendSurvey|CountUser|" + list.size());
@@ -188,11 +188,11 @@ public class SurveyService {
         }
     }
 
-    public CamId_MessageInfo generateMessage(String msisdn, Survey survey) {
+    public Camid_SurveyMessage generateMessage(String msisdn, Survey survey) {
 
         User user = mongoDao.getRegID(msisdn);
         String message = "";
-        CamId_MessageInfo messageInfo = new CamId_MessageInfo();
+        Camid_SurveyMessage messageInfo = new Camid_SurveyMessage();
         if (user != null) {
             if (!"MOCHA_UNKNOWN".contains(user.getRegid()) && user.getPlatform().equalsIgnoreCase("ANDROID")) {
                 message = makeMessageSurvey(survey, user);
@@ -207,11 +207,11 @@ public class SurveyService {
                 return messageInfo;
             } else {
                 logger.info("generateMessage|RegId is Empty!");
-                return new CamId_MessageInfo();
+                return new Camid_SurveyMessage();
             }
         } else {
             logger.info("generateMessage|User is Empty!");
-            return new CamId_MessageInfo();
+            return new Camid_SurveyMessage();
         }
         // push messageInfo to fcm
     }
