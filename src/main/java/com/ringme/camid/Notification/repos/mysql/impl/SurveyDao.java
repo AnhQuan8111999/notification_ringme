@@ -23,14 +23,15 @@ public class SurveyDao {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     // get 20 survey non process
-    public List<Survey> getSurveyActive() {
+    public List<Survey> getSurveyActive(int page, int size) {
         List<Survey> list = new ArrayList<>();
         String SQL = "SELECT cc.*, cs.title as seg_name,cs.phone_list, cs.file_path, cs.count, cs.input_type \n" +
                 "                                 FROM camid_survey cc INNER JOIN camid_segment cs \n" +
                 "                                 WHERE cc.segment_id=cs.id AND cc.active=1 AND cc.process_status = 0 \n" +
-                "                                 limit 0,20";
+                "                                 limit :page, :size";
         try {
-            list = jdbcTemplate.query(SQL, new RowMapper<Survey>() {
+            list = jdbcTemplate.query(SQL, new MapSqlParameterSource()
+                    .addValue("page", page * size).addValue("size", size), new RowMapper<Survey>() {
                 @Override
                 public Survey mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Survey survey = new Survey();

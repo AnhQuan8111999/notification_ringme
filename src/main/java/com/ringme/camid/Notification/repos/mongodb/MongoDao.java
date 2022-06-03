@@ -87,6 +87,7 @@ public class MongoDao {
         }
         return list;
     }
+
     public List<Camid_SurveyMessage> getSurvey(String msisdn, int limit, int skip) {
         Query query = new Query(Criteria.where("msisdn").is(msisdn));
         List<Camid_SurveyMessage> list = new ArrayList<>();
@@ -132,4 +133,14 @@ public class MongoDao {
         }
     }
 
+    public long deleteMessageInfoAll(String msisdn) {
+        Query query = new Query(Criteria.where("msisdn").is(msisdn));
+        long result = 0L;
+        try {
+            result = mongoTemplate.remove(query, "message_info").getDeletedCount();
+        } catch (Exception e) {
+            logger.error("deleteMessageInfoAll|Exception|" + e.getMessage(), e);
+        }
+        return result;
+    }
 }

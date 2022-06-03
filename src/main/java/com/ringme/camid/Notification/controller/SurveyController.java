@@ -25,7 +25,7 @@ public class SurveyController {
     /**
      * GET ALL Survey Message BY MSISDN
      */
-    @RequestMapping(value = "/getSurvey/home", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String getNotification(
             @RequestParam("msisdn") String msisdn,

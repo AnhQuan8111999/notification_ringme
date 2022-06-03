@@ -426,7 +426,7 @@ public class CampaignService {
     public void schedule(Campaign entity) throws SchedulerException {
 
         if (entity != null) {
-            JobDetail crontab = newJob(JobConfiguration.class).withIdentity(String.valueOf(entity.getId()), "job").build();
+            JobDetail crontab = newJob(JobConfiguration.class).withIdentity(String.valueOf(entity.getId()), "job_campaign").build();
             crontab.getJobDataMap().put("service", this);
             crontab.getJobDataMap().put("entity", entity);
             Trigger trigger = newTrigger().startNow().withIdentity(String.valueOf(entity.getId()), "trigger")
@@ -567,6 +567,15 @@ public class CampaignService {
             campaignDao.updateCampaignActive(id, active);
         } catch (Exception e) {
             logger.error("updateCampaignActive|Exception|" + e.getMessage(), e);
+        }
+    }
+
+    public long deleteMessageInfoAll(String msisdn) {
+        try {
+            return mongoDao.deleteMessageInfoAll(msisdn);
+        } catch (Exception e) {
+            logger.error("deleteMessageInfoAll|Exception|" + e.getMessage(), e);
+            return -1;
         }
     }
 }

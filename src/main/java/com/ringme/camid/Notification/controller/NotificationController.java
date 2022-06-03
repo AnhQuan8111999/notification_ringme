@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/v1/camid/")
+@RequestMapping("/v1/notification/")
 public class NotificationController {
     private static final Logger logger = LogManager.getLogger(NotificationController.class);
     @Autowired
@@ -35,7 +35,7 @@ public class NotificationController {
     /**
      * GET ALL NOTIFICATION BY MSISDN
      */
-    @RequestMapping(value = "/getNotification/home", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String getNotification(
             @RequestParam("msisdn") String msisdn,
@@ -58,7 +58,7 @@ public class NotificationController {
     /**
      * GET LIST NOTIFICATION FOR TEST
      */
-    @RequestMapping(value = "/getNotification/test", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String getNotificationMySQL(
             @RequestParam("msisdn") String msisdn,
@@ -121,7 +121,7 @@ public class NotificationController {
     /**
      * FILL ALL NOTIFICATION -> SEEN
      */
-    @RequestMapping(value = "/getNotification/count", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/seen/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String fillSeenNotification(@RequestParam("msisdn") String msisdn
     ) {
@@ -234,9 +234,36 @@ public class NotificationController {
     }
 
     /**
+     * DELETE A MESSAGEINFO BY ID
+     */
+    @RequestMapping(value = "/delete/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String deleteMessageInfoAll(@RequestParam("msisdn") String msisdn) {
+        String result = "";
+        long start = System.currentTimeMillis();
+        JsonObject jsonObject = new JsonObject();
+        try {
+            long count = campaignService.deleteMessageInfoAll(msisdn);
+            jsonObject.addProperty("code", 200);
+            jsonObject.addProperty("message", "delete messageinfo success");
+            jsonObject.addProperty("data", count);
+            long proc = System.currentTimeMillis() - start;
+            logger.info("deleteMessageInfo|Msisdn|" + msisdn + "|msId|" + msisdn + "|ExecuteTime|" + proc);
+        } catch (Exception e) {
+            logger.error("deleteMessageInfo|Exception|" + e.getMessage(), e);
+            jsonObject.addProperty("code", 400);
+            jsonObject.addProperty("message", "delete messageinfo fail");
+            jsonObject.addProperty("data", "");
+
+        }
+        result = jsonObject.toString();
+        return result;
+    }
+
+    /**
      * SEND TEST PUSH
      */
-    @RequestMapping(value = "/notification/push", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/push", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String pushNotification(@RequestBody Campaign campaign,
                                    @RequestBody Segment segment) {
@@ -260,9 +287,9 @@ public class NotificationController {
     }
 
     /**
-     * SEND TEST PUSH
+     * UPDATE ACTIVE STATUS
      */
-    @RequestMapping(value = "/notification/update", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/update", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String pushNotification(@RequestParam("id") String id,
                                    @RequestParam("active") int active) {

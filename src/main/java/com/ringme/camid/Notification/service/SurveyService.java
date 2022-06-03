@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.ringme.camid.Notification.job.JobConfiguration;
+import com.ringme.camid.Notification.job.JobSurvey;
 import com.ringme.camid.Notification.repos.mongodb.MongoDao;
 import com.ringme.camid.Notification.repos.mongodb.entity.CamId_MessageInfo;
 import com.ringme.camid.Notification.repos.mongodb.entity.Camid_SurveyMessage;
@@ -62,6 +63,8 @@ public class SurveyService {
     private BlockingQueue<Survey> queue = new ArrayBlockingQueue<>(10000);
     SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
     private Scheduler scheduler = schedFact.getScheduler();
+    private int count;
+    private static final int page_size = 20;
 
     private static final String survey_template = "  { \"to\": \"_TO_\",\n" +
             "  \"message_id\": \"_MSGID_\",\n" +
@@ -82,6 +85,7 @@ public class SurveyService {
     private static final Logger logger = LogManager.getLogger(SurveyService.class);
 
     public SurveyService() throws SchedulerException {
+        count = 0;
         scheduler.start();
     }
 
@@ -90,9 +94,15 @@ public class SurveyService {
     public void LoadSurvey() {
         List<Survey> list = new ArrayList<>();
         long start = System.currentTimeMillis();
+        int totalCampaign = surveyDao.getCountSurvey();
+        int number_of_page = 0;
+        if (totalCampaign % 20 == 0) number_of_page = totalCampaign / 20;
+        else number_of_page = (totalCampaign / 20) + 1;
         try {
             logger.info("Load Survey");
-            list = surveyDao.getSurveyActive();
+            list = surveyDao.getSurveyActive(count, page_size);
+            if (count > number_of_page) count = 0;
+            else count++;
             logger.info("LoadSurvey|Count|" + list.size());
             for (Survey survey : list) {
                 if (StringUtils.isEmpty(survey.getDelivery()) || "now".contains(survey.getDelivery())) {
@@ -274,7 +284,7 @@ public class SurveyService {
     public void schedule(Survey entity) throws SchedulerException {
 
         if (entity != null) {
-            JobDetail crontab = newJob(JobConfiguration.class).withIdentity(String.valueOf(entity.getId()), "job").build();
+            JobDetail crontab = newJob(JobSurvey.class).withIdentity(String.valueOf(entity.getId()), "job_survey").build();
             crontab.getJobDataMap().put("service", this);
             crontab.getJobDataMap().put("entity", entity);
             Trigger trigger = newTrigger().startNow().withIdentity(String.valueOf(entity.getId()), "trigger")
@@ -289,6 +299,7 @@ public class SurveyService {
             System.out.println("[schedule] Entity is null");
         }
     }
+
     public String getSurveyMessage(String msisdn, int limit, int skip) {
         String result = "";
         JsonObject jsonObject = new JsonObject();
