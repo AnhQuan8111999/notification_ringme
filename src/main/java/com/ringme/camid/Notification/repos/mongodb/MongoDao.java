@@ -114,7 +114,7 @@ public class MongoDao {
         Query query = new Query(Criteria.where("msisdn").is(msisdn).and("status").is(0));
         try {
 //            result = mongoTemplate.count(query, CamId_MessageInfo.class);
-            UpdateResult updateResult = mongoTemplate.updateFirst(query, new Update().set("status", 1), CamId_MessageInfo.class);
+            UpdateResult updateResult = mongoTemplate.updateMulti(query, new Update().set("status", 1), CamId_MessageInfo.class);
             result = updateResult.getModifiedCount();
         } catch (Exception e) {
             logger.error("fillSeenCampaign|Exception|" + e.getMessage(), e);

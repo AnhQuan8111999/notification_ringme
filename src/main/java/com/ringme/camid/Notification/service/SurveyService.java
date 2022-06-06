@@ -108,7 +108,7 @@ public class SurveyService {
                 if (StringUtils.isEmpty(survey.getDelivery()) || "now".contains(survey.getDelivery())) {
                     process_Survey(survey);
                 } else schedule(survey);
-                updateSurvey(survey.getId(), 2);
+//                updateSurvey(survey.getId(), 1);
             }
             long proc = System.currentTimeMillis() - start;
             logger.info("LoadSurvey|ExecuteTime|" + proc);
@@ -146,6 +146,7 @@ public class SurveyService {
                     }
                 }
             }
+            updateSurvey(survey.getId(), 2);
         } catch (Exception e) {
             logger.error("process_Survey|Exception|" + e.getMessage(), e);
             updateSurvey(survey.getId(), 3);
@@ -184,17 +185,6 @@ public class SurveyService {
             logger.info("process_ActiveUsers|SendSurvey|TotalUser|" + total + "|ExecuteTime|" + proc);
         } catch (Exception e) {
             logger.error("process_ActiveUsers|Exception|" + e.getMessage(), e);
-        }
-    }
-
-    private void unSchedule(int id) {
-        try {
-            scheduler.unscheduleJob(TriggerKey.triggerKey(String.valueOf(id), "trigger"));
-            scheduler.deleteJob(JobKey.jobKey(String.valueOf(id), "job"));
-            //campaignDao.finishSurvey(fcId);
-            // logger.info("unscheduler success: " + fc);
-        } catch (SchedulerException ex) {
-            logger.error("unscheduler|Exception|" + ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -287,7 +277,7 @@ public class SurveyService {
             JobDetail crontab = newJob(JobSurvey.class).withIdentity(String.valueOf(entity.getId()), "job_survey").build();
             crontab.getJobDataMap().put("service", this);
             crontab.getJobDataMap().put("entity", entity);
-            Trigger trigger = newTrigger().startNow().withIdentity(String.valueOf(entity.getId()), "trigger")
+            Trigger trigger = newTrigger().startNow().withIdentity(String.valueOf(entity.getId()), "trigger_survey")
                     .withSchedule(cronSchedule(entity.getDelivery())).build();
             JobKey key = crontab.getKey();
             // System.out.println(key);
@@ -297,6 +287,17 @@ public class SurveyService {
             }
         } else {
             System.out.println("[schedule] Entity is null");
+        }
+    }
+
+    private void unSchedule(int id) {
+        try {
+            scheduler.unscheduleJob(TriggerKey.triggerKey(String.valueOf(id), "trigger_survey"));
+            scheduler.deleteJob(JobKey.jobKey(String.valueOf(id), "job_survey"));
+            //campaignDao.finishSurvey(fcId);
+            // logger.info("unscheduler success: " + fc);
+        } catch (SchedulerException ex) {
+            logger.error("unscheduler|Exception|" + ex.getLocalizedMessage(), ex);
         }
     }
 

@@ -40,8 +40,7 @@ public class NotificationController {
     public String getNotification(
             @RequestParam("msisdn") String msisdn,
             @RequestParam("size") int size,
-            @RequestParam("page") int page,
-            @RequestHeader Map<String, String> headers
+            @RequestParam("page") int page
     ) {
         String result = "";
         long start = System.currentTimeMillis();
@@ -61,8 +60,7 @@ public class NotificationController {
     @RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public String getNotificationMySQL(
-            @RequestParam("msisdn") String msisdn,
-            @RequestHeader Map<String, String> headers
+            @RequestParam("msisdn") String msisdn
     ) {
         String result = "";
         long start = System.currentTimeMillis();
@@ -234,7 +232,7 @@ public class NotificationController {
     }
 
     /**
-     * DELETE A MESSAGEINFO BY ID
+     * DELETE ALL MESSAGEINFO
      */
     @RequestMapping(value = "/delete/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody

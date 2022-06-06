@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -59,9 +60,11 @@ public class SurveyDao {
     }
 
     public void updateSurvey(int id, int i) {
-        String SQL = "UPDATE camid_survey SET process_status = :status WHERE id =:id";
+        String SQL = "UPDATE camid_survey SET process_status = :status, updated_at =:date WHERE id =:id";
         try {
-            jdbcTemplate.update(SQL, new MapSqlParameterSource().addValue("status", i).addValue("id", id));
+            jdbcTemplate.update(SQL, new MapSqlParameterSource()
+                    .addValue("status", i).addValue("id", id)
+                    .addValue("date", new Date()));
         } catch (Exception e) {
             logger.error("updateSurvey|Exception|" + e.getMessage(), e);
         }
@@ -69,7 +72,7 @@ public class SurveyDao {
 
     public int getCountSurvey() {
         int result = 0;
-        String SQL = "SELECT count(*) from camid_survey WHERE process_status in (0,1) AND ended_at>=NOW() ";
+        String SQL = "SELECT count(*) from camid_survey WHERE process_status in (0,1)";
         try {
             result = jdbcTemplate.queryForObject(SQL, new MapSqlParameterSource(), Integer.class);
         } catch (Exception e) {

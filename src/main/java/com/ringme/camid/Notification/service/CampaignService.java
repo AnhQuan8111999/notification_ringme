@@ -429,7 +429,7 @@ public class CampaignService {
             JobDetail crontab = newJob(JobConfiguration.class).withIdentity(String.valueOf(entity.getId()), "job_campaign").build();
             crontab.getJobDataMap().put("service", this);
             crontab.getJobDataMap().put("entity", entity);
-            Trigger trigger = newTrigger().startNow().withIdentity(String.valueOf(entity.getId()), "trigger")
+            Trigger trigger = newTrigger().startNow().withIdentity(String.valueOf(entity.getId()), "trigger_campaign")
                     .withSchedule(cronSchedule(entity.getCron_expression())).build();
             JobKey key = crontab.getKey();
             // System.out.println(key);
@@ -445,8 +445,8 @@ public class CampaignService {
     //huy bo schedule
     public void unSchedule(String fcId) {
         try {
-            scheduler.unscheduleJob(TriggerKey.triggerKey(String.valueOf(fcId), "trigger"));
-            scheduler.deleteJob(JobKey.jobKey(String.valueOf(fcId), "job"));
+            scheduler.unscheduleJob(TriggerKey.triggerKey(String.valueOf(fcId), "job_campaign"));
+            scheduler.deleteJob(JobKey.jobKey(String.valueOf(fcId), "trigger_campaign"));
             //campaignDao.finishCampaign(fcId);
             // logger.info("unscheduler success: " + fc);
         } catch (SchedulerException ex) {

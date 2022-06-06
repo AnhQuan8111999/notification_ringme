@@ -1,5 +1,6 @@
 package com.ringme.camid.Notification.service;
 
+import com.google.gson.JsonObject;
 import com.ringme.camid.Notification.repos.mongodb.MongoDao;
 import com.ringme.camid.Notification.repos.mongodb.entity.CamId_MessageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
