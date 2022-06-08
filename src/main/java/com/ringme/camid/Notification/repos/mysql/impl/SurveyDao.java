@@ -81,4 +81,16 @@ public class SurveyDao {
         }
         return result;
     }
+
+    public int finishSurvey(int id) {
+        int result = 0;
+        String SQL = "UPDATE camid_survey SET process_status=2, updated_at=NOW()\n" +
+                "WHERE id=:id";
+        try {
+            result = jdbcTemplate.update(SQL, new MapSqlParameterSource().addValue("id", id));
+        } catch (Exception e) {
+            logger.error("finishSurvey|Exception|" + e.getMessage(), e);
+        }
+        return result;
+    }
 }

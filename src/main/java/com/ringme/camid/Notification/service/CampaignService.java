@@ -521,7 +521,7 @@ public class CampaignService {
     public int finishCampaign(String id) {
         int result = 0;
         try {
-            result = (campaignDao.finishCampaign(id));
+            result = campaignDao.finishCampaign(id);
         } catch (Exception e) {
             logger.error("finishCampaign|Exception|" + e.getMessage(), e);
         }

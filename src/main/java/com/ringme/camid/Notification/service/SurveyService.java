@@ -290,7 +290,7 @@ public class SurveyService {
         }
     }
 
-    private void unSchedule(int id) {
+    public void unSchedule(int id) {
         try {
             scheduler.unscheduleJob(TriggerKey.triggerKey(String.valueOf(id), "trigger_survey"));
             scheduler.deleteJob(JobKey.jobKey(String.valueOf(id), "job_survey"));
@@ -320,4 +320,14 @@ public class SurveyService {
         result = jsonObject.toString();
         return result;
     }
+
+    public void finishSurvey(int id){
+        int result = 0;
+        try {
+            result = surveyDao.finishSurvey(id);
+        } catch (Exception e) {
+            logger.error("finishCampaign|Exception|" + e.getMessage(), e);
+        }
+    }
+
 }
