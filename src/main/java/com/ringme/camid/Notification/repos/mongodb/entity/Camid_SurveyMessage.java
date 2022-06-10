@@ -32,11 +32,13 @@ public class Camid_SurveyMessage {
     private int status; //default = 0
     @Field(value = "type")
     private String type;
+    @Field(value = "surveyId")
+    private int surveyId;
     @Field(value = "satisfied")
-    private long satisfied;
+    private int satisfied;
     @Field(value = "normal")
-    private long normal;
+    private int normal;
     @Field(value = "unsatisfied")
-    private long unsatisfied;
+    private int unsatisfied;
 
 }

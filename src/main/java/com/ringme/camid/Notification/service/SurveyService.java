@@ -202,6 +202,7 @@ public class SurveyService {
                 messageInfo.setDeep_link(survey.getDeeplink());
                 messageInfo.setThumbnail(survey.getImage());
                 messageInfo.setNotified_date(new Date());
+                messageInfo.setSurveyId(survey.getId());
                 messageInfo.setType("Survey");
                 messageInfo.setStatus(0);
                 return messageInfo;
@@ -322,9 +323,8 @@ public class SurveyService {
     }
 
     public void finishSurvey(int id){
-        int result = 0;
         try {
-            result = surveyDao.finishSurvey(id);
+            surveyDao.finishSurvey(id);
         } catch (Exception e) {
             logger.error("finishCampaign|Exception|" + e.getMessage(), e);
         }
